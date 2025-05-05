@@ -19,5 +19,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Verify Java version
-        run: java -version
+      - name: Install flutter 3.29.3
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+          channel: 'stable'
+
+      - name: Fetch flutter packages
+        run: flutter pub get
