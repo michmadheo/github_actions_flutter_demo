@@ -25,6 +25,13 @@ jobs:
           repository: michmadheo/github_actions_flutter_demo_secrets
           path: secrets
 
+      # - name: Checkout secrets repo
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: michmadheo/github_actions_flutter_demo_secrets
+      #     token: secret-token
+      #     path: secrets
+
       - name: Copy build keys to project
         run: |
           cp secrets/key.properties project/android/
@@ -54,3 +61,9 @@ jobs:
         run: |
           cd project
           flutter build apk
+
+      - name: Upload Buiild to Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: project/build/app/outputs/flutter-apk/app-release.apk
