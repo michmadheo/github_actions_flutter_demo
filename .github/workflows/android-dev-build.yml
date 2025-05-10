@@ -33,17 +33,6 @@ jobs:
           cp secrets/key.properties project/android/
           cp secrets/android-keystore.jks project/android/app/
 
-      # - name: Build Number
-      #   run: echo "Build number is $BUILD_NUMBER"
-
-      - name: Build Number
-        run: |
-          cd project
-          current_version_number=$(awk '/version:/ {print $2}' pubspec.yaml | cut -d'+' -f1)
-          new_version="$current_version_number+$BUILD_NUMBER"
-          echo "version: $new_version"
-          sed -i "s/version: .*/version: $new_version/" pubspec.yaml
-
       - name: Install Java 17
         uses: actions/setup-java@v4
         with:
@@ -60,6 +49,14 @@ jobs:
         run: |
           cd project
           flutter pub get
+      
+      - name: Increment build number
+        run: |
+          cd project
+          current_version_number=$(awk '/version:/ {print $2}' pubspec.yaml | cut -d'+' -f1)
+          new_version="$current_version_number+$BUILD_NUMBER"
+          echo "version: $new_version"
+          sed -i "s/version: .*/version: $new_version/" pubspec.yaml
 
       - name: Build Android APK
         run: |
