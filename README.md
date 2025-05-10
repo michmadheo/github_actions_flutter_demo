@@ -1,16 +1,6 @@
 # github_actions_flutter_demo
 
-A new Flutter project.
+This is the demo repository for the article "Flutter Android CI/CD with GitHub Actions & Firebase App Distribution" Part 1 and 2
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+[Go to Part 1 article](https://medium.com/@michaelamadheo/flutter-android-ci-cd-with-github-actions-firebase-app-distribution-part-1-building-the-app-7822c91d19ee)
+[Go to Part 2 article](https://medium.com/@michaelamadheo/flutter-android-ci-cd-with-github-actions-firebase-app-distribution-part-2-distributing-the-d7002865351a)
