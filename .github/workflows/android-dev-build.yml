@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: michmadheo/github_actions_flutter_demo_secrets
-          token: SECRETS_TOKEN
+          # token: SECRETS_TOKEN
           path: secrets
 
       - name: Copy build keys to project
