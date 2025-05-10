@@ -13,6 +13,8 @@ jobs:
     env:
       BUILD_NUMBER: ${{ github.run_number }}
       SECRETS_TOKEN: ${{ secrets.SECRETS_TOKEN }}
+      FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
     steps:
       - name: Checkout to main project repo
@@ -63,8 +65,16 @@ jobs:
           cd project
           flutter build apk
 
-      - name: Upload Build to Artifact
+      - name: Upload build to Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: project/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Distribute to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{env.FIREBASE_APP_ID}}
+          serviceCredentialsFileContent: ${{ env.FIREBASE_SERVICE_ACCOUNT }}
+          groups: tester-qa
+          file: project/build/app/outputs/flutter-apk/app-release.apk
