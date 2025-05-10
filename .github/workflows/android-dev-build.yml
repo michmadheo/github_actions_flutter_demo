@@ -12,25 +12,20 @@ jobs:
 
     env:
       BUILD_NUMBER: ${{ github.run_number }}
+      SECRETS_TOKEN: ${{ secrets.SECRETS_TOKEN }}
 
     steps:
       - name: Checkout to main project repo
         uses: actions/checkout@v4
         with:
           path: project
-        
+
       - name: Checkout secrets repo
         uses: actions/checkout@v4
         with:
           repository: michmadheo/github_actions_flutter_demo_secrets
+          token: SECRETS_TOKEN
           path: secrets
-
-      # - name: Checkout secrets repo
-      #   uses: actions/checkout@v4
-      #   with:
-      #     repository: michmadheo/github_actions_flutter_demo_secrets
-      #     token: secret-token
-      #     path: secrets
 
       - name: Copy build keys to project
         run: |
