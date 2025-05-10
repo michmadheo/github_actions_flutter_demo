@@ -33,8 +33,16 @@ jobs:
           cp secrets/key.properties project/android/
           cp secrets/android-keystore.jks project/android/app/
 
+      # - name: Build Number
+      #   run: echo "Build number is $BUILD_NUMBER"
+
       - name: Build Number
-        run: echo "Build number is $BUILD_NUMBER"
+        run: |
+          cd project
+          current_version_number=$(awk '/version:/ {print $2}' pubspec.yaml | cut -d'+' -f1)
+          new_version="$current_version_number+$BUILD_NUMBER"
+          echo "version: $new_version"
+          sed -i "s/version: .*/version: $new_version/" pubspec.yaml
 
       - name: Install Java 17
         uses: actions/setup-java@v4
@@ -58,7 +66,7 @@ jobs:
           cd project
           flutter build apk
 
-      - name: Upload Buiild to Artifact
+      - name: Upload Build to Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release
