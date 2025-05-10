@@ -14,7 +14,21 @@ jobs:
       BUILD_NUMBER: ${{ github.run_number }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout to main project repo
+        uses: actions/checkout@v4
+        with:
+          path: project
+        
+      - name: Checkout secrets repo
+        uses: actions/checkout@v4
+        with:
+          repository: michmadheo/github_actions_flutter_demo_secrets
+          path: secrets
+
+      - name: Copy build keys to project
+        run: |
+          cp secrets/key.properties project/android/
+          cp secrets/android-keystore.jks project/android/app/
 
       - name: Build Number
         run: echo "Build number is $BUILD_NUMBER"
@@ -32,4 +46,11 @@ jobs:
           channel: 'stable'
 
       - name: Fetch flutter packages
-        run: flutter pub get
+        run: |
+          cd project
+          flutter pub get
+
+      - name: Build Android APK
+        run: |
+          cd project
+          flutter build apk
