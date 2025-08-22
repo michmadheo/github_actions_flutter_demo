@@ -1,0 +1,9 @@
+build/
+.gradle/
+.android/
+.ios/
+
+.git/
+.gitignore
+.idea/
+.vscode/
