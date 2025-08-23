@@ -3,16 +3,56 @@ name: Docker Image CI
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+
+  workflow_dispatch:
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
+    env:
+      BUILD_NUMBER: ${{ github.run_number }}
+      SECRETS_TOKEN: ${{ secrets.SECRETS_TOKEN }}
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - name: Checkout to main project repo
+        uses: actions/checkout@v4
+        with:
+          path: project
+
+      - name: Checkout secrets repo
+        uses: actions/checkout@v4
+        with:
+          repository: michmadheo/github_actions_flutter_demo_secrets
+          ref: refs/heads/main
+          token: ${{ env.SECRETS_TOKEN }}
+          path: secrets
+
+      - name: Copy build keys to project
+        run: |
+          cp secrets/key.properties project/android/
+          cp secrets/android-keystore.jks project/android/app/
+
+      - name: Increment build number
+        run: |
+          cd project
+          current_version_number=$(awk '/version:/ {print $2}' pubspec.yaml | cut -d'+' -f1)
+          new_version="$current_version_number+$BUILD_NUMBER"
+          echo "version: $new_version"
+          sed -i "s/version: .*/version: $new_version/" pubspec.yaml
+
+      - name: Build Docker Image
+        run: |
+          cd project
+          docker build -t flutter-apk .
+
+      - name: Extract Android APK File
+        run: |
+          cd project
+          docker cp $(docker create --rm flutter-apk):/output/app-release.apk ./app-release.apk
+
+      - name: Upload build to Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: project/app-release.apk
