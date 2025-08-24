@@ -51,6 +51,12 @@ jobs:
           cd project
           docker cp $(docker create --rm flutter-apk):/output/app-release.apk ./app-release.apk
 
+      # # Alternative option using docker run
+      # - name: Extract Android APK File
+      #   run: |
+      #     cd project
+      #     docker run --rm flutter-apk > app-release.apk
+
       - name: Upload build to Artifact
         uses: actions/upload-artifact@v4
         with:
