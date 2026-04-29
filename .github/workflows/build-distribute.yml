@@ -28,63 +28,108 @@ jobs:
           token: ${{ env.SECRETS_TOKEN }}
           path: secrets
 
-      - name: Copy build keys to project
-        run: |
-          cp secrets/key.properties project/android/
-          cp secrets/android-keystore.jks project/android/app/
-
-      - name: Increment build number
+      - name: Install Ruby with bundler
         run: |
           cd project
-          current_version_number=$(awk '/version:/ {print $2}' pubspec.yaml | cut -d'+' -f1)
-          new_version="$current_version_number+$BUILD_NUMBER"
-          echo "version: $new_version"
-          sed -i "s/version: .*/version: $new_version/" pubspec.yaml
+          cd fastlane
+          gem install bundler
+          bundle install
 
-      - name: Build Docker Image
+      - name: Deploy with fastlane
+        env:
+          APP_ID_ANDROID: ${{ secrets.FIREBASE_APP_ID }}
         run: |
           cd project
-          docker build -t flutter-apk .
+          cd fastlane
+          bundle exec fastlane android distribute
 
-      - name: Extract Android APK File
-        run: |
-          cd project
-          docker cp $(docker create --rm flutter-apk):/output/app-release.apk ./app-release.apk
+# name: Build Distribute
 
-      - name: Upload build to Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
-          path: project/app-release.apk
+# on:
+#   push:
+#     branches: [ "master" ]
+
+#   workflow_dispatch:
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     env:
+#       BUILD_NUMBER: ${{ github.run_number }}
+#       SECRETS_TOKEN: ${{ secrets.SECRETS_TOKEN }}
+
+#     steps:
+#       - name: Checkout to main project repo
+#         uses: actions/checkout@v4
+#         with:
+#           path: project
+
+#       - name: Checkout secrets repo
+#         uses: actions/checkout@v4
+#         with:
+#           repository: michmadheo/github_actions_flutter_demo_secrets
+#           ref: refs/heads/main
+#           token: ${{ env.SECRETS_TOKEN }}
+#           path: secrets
+
+#       - name: Copy build keys to project
+#         run: |
+#           cp secrets/key.properties project/android/
+#           cp secrets/android-keystore.jks project/android/app/
+
+#       - name: Increment build number
+#         run: |
+#           cd project
+#           current_version_number=$(awk '/version:/ {print $2}' pubspec.yaml | cut -d'+' -f1)
+#           new_version="$current_version_number+$BUILD_NUMBER"
+#           echo "version: $new_version"
+#           sed -i "s/version: .*/version: $new_version/" pubspec.yaml
+
+#       - name: Build Docker Image
+#         run: |
+#           cd project
+#           docker build -t flutter-apk .
+
+#       - name: Extract Android APK File
+#         run: |
+#           cd project
+#           docker cp $(docker create --rm flutter-apk):/output/app-release.apk ./app-release.apk
+
+#       - name: Upload build to Artifact
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: app-release
+#           path: project/app-release.apk
           
-  deploy:
-    runs-on: ubuntu-latest
+#   deploy:
+#     runs-on: ubuntu-latest
     
-    needs: build
+#     needs: build
     
-    environment: production
+#     environment: production
 
-    env:
-      FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+#     env:
+#       FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+#       FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
       
-    steps:
-      - name: Checkout to main project repo
-        uses: actions/checkout@v4
-        with:
-          path: project
+#     steps:
+#       - name: Checkout to main project repo
+#         uses: actions/checkout@v4
+#         with:
+#           path: project
           
-      - name: Download built APK
-        uses: actions/download-artifact@v4
-        with:
-          name: app-release
-          path: .
+#       - name: Download built APK
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: app-release
+#           path: .
           
-      - name: Distribute to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{env.FIREBASE_APP_ID}}
-          serviceCredentialsFileContent: ${{ env.FIREBASE_SERVICE_ACCOUNT }}
-          groups: tester-qa
-          file: app-release.apk
+#       - name: Distribute to Firebase App Distribution
+#         uses: wzieba/Firebase-Distribution-Github-Action@v1
+#         with:
+#           appId: ${{env.FIREBASE_APP_ID}}
+#           serviceCredentialsFileContent: ${{ env.FIREBASE_SERVICE_ACCOUNT }}
+#           groups: tester-qa
+#           file: app-release.apk
       
