@@ -1,0 +1,12 @@
+platform :android do
+  lane :distribute do
+    commit = last_git_commit
+    firebase_app_distribution(
+      app: ENV["APP_ID_ANDROID"],
+      groups: "tester-qa",
+      release_notes: commit[:message],
+      service_credentials_file: "./firebase-distribution.json",
+      apk_path: "./app-release.apk"
+    )
+  end
+end
