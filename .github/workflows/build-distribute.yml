@@ -32,7 +32,7 @@ jobs:
         run: |
           cd project
           cd fastlane
-          gem install bundler
+          sudo gem install bundler
           bundle install
 
       - name: Deploy with fastlane
