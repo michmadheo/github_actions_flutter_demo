@@ -86,5 +86,5 @@ jobs:
           appId: ${{env.FIREBASE_APP_ID}}
           serviceCredentialsFileContent: ${{ env.FIREBASE_SERVICE_ACCOUNT }}
           groups: tester-qa
-          file: project/build/app/outputs/flutter-apk/app-release.apk
+          file: app-release.apk
       
