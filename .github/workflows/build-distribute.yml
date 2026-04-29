@@ -28,12 +28,12 @@ jobs:
           token: ${{ env.SECRETS_TOKEN }}
           path: secrets
 
-      - name: Install Ruby with bundler
-        run: |
-          cd project
-          cd fastlane
-          sudo gem install bundler
-          bundle install
+      - name: Setup Ruby and Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 'ruby'
+          bundler-cache: true
+          working-directory: project/fastlane
 
       - name: Deploy with fastlane
         env:
